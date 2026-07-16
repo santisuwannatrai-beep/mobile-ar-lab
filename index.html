@@ -100,9 +100,15 @@
       const topPanel = document.querySelector('#top-panel');
       const runButton = document.querySelector('#run-button');
       const statusButton = document.querySelector('#status-button');
+      const speedButton = document.querySelector('#speed-button');
+      const reverseButton = document.querySelector('#reverse-button');
 
       let running = true;
       let warning = false;
+      let normalSpeed = -880;
+      let currentSpeed = normalSpeed;
+      let reverse = false;
+      let speed2x = false;
 
       marker.addEventListener('markerFound', () => {
         topPanel.innerHTML = 'พบ Hiro Marker แล้ว — โมเดลมอเตอร์พร้อมใช้งาน<span class="hint">แตะปุ่มด้านล่างเพื่อทดลองควบคุม</span>';
@@ -114,8 +120,26 @@
 
       runButton.addEventListener('click', () => {
         running = !running;
-        shaft.setAttribute('spin-control', 'active', running);
+        shaft.setAttribute('spin-control',
+          `axis: y; speed: ${currentSpeed}; active: ${running}`);
         runButton.textContent = running ? 'หยุดมอเตอร์' : 'เริ่มมอเตอร์';
+      });
+
+      
+      speedButton.addEventListener('click', () => {
+        speed2x = !speed2x;
+        currentSpeed = speed2x ? Math.abs(normalSpeed)*2 : Math.abs(normalSpeed);
+        currentSpeed = reverse ? currentSpeed : -currentSpeed;
+        shaft.setAttribute('spin-control', `axis: y; speed: ${currentSpeed}; active: ${running}`);
+        speedButton.textContent = speed2x ? 'Speed x1' : 'Speed x2';
+      });
+
+      reverseButton.addEventListener('click', () => {
+        reverse = !reverse;
+        const base = speed2x ? Math.abs(normalSpeed)*2 : Math.abs(normalSpeed);
+        currentSpeed = reverse ? base : -base;
+        shaft.setAttribute('spin-control', `axis: y; speed: ${currentSpeed}; active: ${running}`);
+        reverseButton.textContent = reverse ? 'Forward' : 'Reverse';
       });
 
       statusButton.addEventListener('click', () => {
@@ -212,7 +236,7 @@
           color="#cfd8dc"
           metalness="0.8"
           roughness="0.2"
-          spin-control="axis: y; speed: -440; active: true"
+          spin-control="axis: y; speed: -880; active: true"
         >
           <a-box position="0 0.12 0.09" width="0.05" height="0.18" depth="0.06" color="#ffeb3b"></a-box>
         </a-cylinder>
